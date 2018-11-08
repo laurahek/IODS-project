@@ -124,15 +124,48 @@ $(document).ready(function () {
 </div>
 
 
-<div id="insert-chapter-2-title-here" class="section level1">
-<h1>Insert chapter 2 title here</h1>
+<div id="week-2-exercises" class="section level1">
+<h1>Week 2 exercises</h1>
 <p><em>Describe the work you have done this week and summarize your learning.</em></p>
 <ul>
 <li>Describe your work and results clearly.</li>
 <li>Assume the reader has an introductory course level understanding of writing and reading R code as well as statistical methods</li>
 <li>Assume the reader has no previous knowledge of your data or the more advanced methods you are using</li>
 </ul>
-<p>graph(gender)</p>
+</div>
+<div id="first-part-data-wrangling" class="section level1">
+<h1>First part, Data wrangling</h1>
+<p>The data wrangling was done in the file create_learning2014.R with the following code, comments in <em>italics</em></p>
+<p><em>creating questions</em> <code>deep_questions &lt;-c(&quot;D03&quot;, &quot;D11&quot;, &quot;D19&quot;, &quot;D27&quot;, &quot;D07&quot;, &quot;D14&quot;, &quot;D22&quot;, &quot;D30&quot;,&quot;D06&quot;,  &quot;D15&quot;, &quot;D23&quot;, &quot;D31&quot;)</code> <code>surface_questions &lt;- c(&quot;SU02&quot;,&quot;SU10&quot;,&quot;SU18&quot;,&quot;SU26&quot;, &quot;SU05&quot;,&quot;SU13&quot;,&quot;SU21&quot;,&quot;SU29&quot;,&quot;SU08&quot;,&quot;SU16&quot;,&quot;SU24&quot;,&quot;SU32&quot;)</code> <code>strategic_questions &lt;- c(&quot;ST01&quot;,&quot;ST09&quot;,&quot;ST17&quot;,&quot;ST25&quot;,&quot;ST04&quot;,&quot;ST12&quot;,&quot;ST20&quot;,&quot;ST28&quot;)</code></p>
+<p><em>creating columns</em></p>
+<p><code>deep_columns &lt;- select(JYTOPKYS3_data one_of(deep_questions)) JYTOPKYS3_data$deep &lt;- rowMeans(deep_columns)</code></p>
+<p><code>surface_columns &lt;- select(JYTOPKYS3_data, one_of(surface_questions)) JYTOPKYS3_data$surf &lt;- rowMeans(surface_columns)</code></p>
+<p><code>strategic_columns &lt;- select(JYTOPKYS3_data, one_of(strategic_questions)) JYTOPKYS3_data$stra &lt;- rowMeans(strategic_columns)</code></p>
+<p><em>assigning which columns to keep</em> <code>keep_columns &lt;- c(&quot;gender&quot;, &quot;Age&quot;, &quot;Attitude&quot;, &quot;deep&quot;, &quot;stra&quot;, &quot;surf&quot;, &quot;Points&quot;) learning2014 &lt;- select(JYTOPKYS3_data, one_of(keep_columns))</code></p>
+<p><em>filtering points</em> <code>learning2014 &lt;- filter (learning2014, Points &gt;0)</code></p>
+<p><em>the data now has 166 observations and 7 variables</em> <em>setting working directory from the menu and then saving</em> <code>write.csv(learning2014, file=&quot;learning2014&quot;, append = TRUE, quote = TRUE, sep = &quot; &quot;,           eol = &quot;\n&quot;, na = &quot;NA&quot;, dec = &quot;,&quot;, row.names = TRUE,           col.names = TRUE, qmethod = c(&quot;escape&quot;, &quot;double&quot;),           fileEncoding = &quot;&quot;)</code> <code>?write.csv</code> <code>read.csv(&quot;learning2014&quot;)</code> <code>str(learning2014)</code> <code>head(learning2014)</code></p>
+</div>
+<div id="second-part-using-the-data-regression-analysis" class="section level1">
+<h1>Second part, using the data &amp; regression analysis</h1>
+<p><em>Step 1: opening the data and exploring</em> I opened the data by using the menu, I notice that there is an extra variable X1 for the first variable which seems to be a numerical count of the rows… I deleted it with</p>
+<p><code>learning2014 &lt;- select(learning2014, -X1)</code></p>
+<p>The learning2014 dataset has 166 observations (no missing values), and 7 variables: “gender” “Age” “Attitude” “deep” “stra” “surf” “Points” (accessed with command ‘names’) I also explored the data with the following commands <code>str(learning2014) dim(learning2014) names(learning2014)</code></p>
+<p><em>Step 2 show a graphical overview of the data and show summaries of the variables in the data</em></p>
+<p>For the summary for the learning2014 I the summary command which gave this output:</p>
+<p>gender Age Attitude deep stra<br />
+Length:166 Min. :17.00 Min. :14.00 Min. :1.583 Min. :1.250<br />
+Class :character 1st Qu.:21.00 1st Qu.:26.00 1st Qu.:3.333 1st Qu.:2.625<br />
+Mode :character Median :22.00 Median :32.00 Median :3.667 Median :3.188<br />
+Mean :25.51 Mean :31.43 Mean :3.680 Mean :3.121<br />
+3rd Qu.:27.00 3rd Qu.:37.00 3rd Qu.:4.083 3rd Qu.:3.625<br />
+Max. :55.00 Max. :50.00 Max. :4.917 Max. :5.000<br />
+surf Points<br />
+Min. :1.583 Min. : 7.00<br />
+1st Qu.:2.417 1st Qu.:19.00<br />
+Median :2.833 Median :23.00<br />
+Mean :2.787 Mean :22.72<br />
+3rd Qu.:3.167 3rd Qu.:27.75<br />
+Max. :4.333 Max. :33.00</p>
 </div>
 
 

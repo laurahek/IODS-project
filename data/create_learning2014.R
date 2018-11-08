@@ -47,10 +47,12 @@ learning2014 <- filter (learning2014, Points >0)
 #the data now has  166 observations and 7 variables. 
 #setting working directory from the menu and then saving
 write.csv(learning2014, file="learning2014", append = TRUE, quote = TRUE, sep = " ",
-          eol = "\n", na = "NA", dec = ".", row.names = TRUE,
+          eol = "\n", na = "NA", dec = ",", row.names = TRUE,
           col.names = TRUE, qmethod = c("escape", "double"),
           fileEncoding = "")
 ?write.csv
-read.table("learning2014")
+read.csv("learning2014")
 str(learning2014)
 head(learning2014)
+
+install.packages("rmarkdown")
