@@ -53,26 +53,80 @@ I opened the data by using the menu, I notice that there is an extra variable X1
 ```learning2014 <- select(learning2014, -X1)```
 
 The learning2014 dataset has 166 observations (no missing values), and 7 variables: "gender"   "Age"      "Attitude" "deep"     "stra"     "surf"     "Points"  (accessed with command 'names')
+
 I also explored the data with the following commands
-```
-library(dplyr)
+```{r, summary statistics}
+learning2014 <- read.csv("C:\\Users\\Laura\\Documents\\GitHub\\IODS-project\\learning2014", header=TRUE)
+
 dim(learning2014)
-names(learning2014)```
-
-*Step 2 show a graphical overview of the data and show summaries of the variables in the data*
-
-SOMETHING IS WRONG HERE, can't knit to html...
-```{r qplot, fig.width=4, fig.height=3, message=FALSE}
-library(ggplot2)
+names(learning2014)
 summary(learning2014)
-qplot(Age,data=learning2014)
 ```
 
-```{r qplot1, fig.width=4, fig.height=3, message=FALSE}
+*Step 2: show a graphical overview of the data and show summaries of the variables in the data*
+
+
+```{r qplot, fig.width=4, fig.height=3, message=FALSE}
+learning2014 <- read.csv("C:\\Users\\Laura\\Documents\\GitHub\\IODS-project\\learning2014", header=TRUE)
 library(ggplot2)
+qplot(Age,data=learning2014)
+summary(learning2014$Age)
 qplot(gender,data=learning2014)
+summary(learning2014$gender)
+qplot(Attitude,data=learning2014)
+summary(learning2014$Attitude)
+qplot(stra,data=learning2014)
+summary(learning2014$stra)
+qplot(deep,data=learning2014)
+summary(learning2014$deep)
+qplot(surf,data=learning2014)
+summary(learning2014$surf)
+qplot(Points,data=learning2014)
+summary(learning2014$Points)
+qplot(Attitude,Age,data=learning2014, aes(x=Attitude, y=Age, col=Age))
+pairs(learning2014[-1])
 ```
-```{r qplot2, fig.width=4, fig.height=3, message=FALSE}
+
+
+
+*Comments*
+It looks like age is quite unequally distributed, with most participants being under the age of 25. There are also considerably more females than males in the data. Attitude, stra, deep and surf at least resemble the normal curve, but there are some obvious gaps with Points. I also wanted to try to plot two variables, Age and Attitudes, just for fun. The scatter plot matric is cool but way too small and I don't know how to change that just for this table...
+
+*Step 3: Regression analysis*
+
+I am trying Age, gender and Attitude as predictors.
+
+```{r, regression statistics attempt 1}
+learning2014 <- read.csv("C:\\Users\\Laura\\Documents\\GitHub\\IODS-project\\learning2014", header=TRUE)
 library(ggplot2)
-qplot(Attitude,Age,data=learning2014)
+library(GGally)
+regression1 <- lm(Points~ Age + gender + Attitude, data=learning2014)
+summary(regression1)
+
 ```
+
+*Deleting insignificant variables*
+
+```{r, regression statistics attempt 2}
+learning2014 <- read.csv("C:\\Users\\Laura\\Documents\\GitHub\\IODS-project\\learning2014", header=TRUE)
+library(ggplot2)
+library(GGally)
+regression1 <- lm(Points~ Attitude, data=learning2014)
+summary(regression1)
+
+```
+
+*Step 4: interpreting the model* 
+
+The only significant predictor for Points is Attitude, with p=4.12e-09. T B coefficient is 0.35255 meaning that for each one-unit increase in Points, Attitude is increased by 0.352 units, with a standard error of 0.056. The R squared is 0.19, meaning that the model explaing 19% of the variability in the variable points.
+
+*Step 5: Residuals*
+
+
+```{r, residuals}
+learning2014 <- read.csv("C:\\Users\\Laura\\Documents\\GitHub\\IODS-project\\learning2014", header=TRUE)
+plot(regression1, which=c(1,2,5))
+```
+
+The assumption relating to residuals for linear regression is that they are normally distributed.
+The first plot 'Residuals vs Fitted' shows if there are any non-linear patterns. The horizontal line is relatively straight, and the residuals are spread relatively evenly. However, there seem to be 3 outlying values, 145, 56 and 35. These cases probably should be explored further and then it should be decided whether to exclude them from the model or not, but the instructions do not really imply we should do that so let's just not that these are outliers. The Quantile-Quantile plot assesses whether the distribution of the residuals is normal; this line should be roughly straight and it is so we are happy with that. The final plot, Residuals vs Leverage, Cook's distance, helps in finding influential cases (outliers that have more influence on the model than other values). Influential cases would appear in the lower right corner, or sometimes the upper. There are no cases plotted there, so we conclude there are no influential cases and the model fits the data well.

@@ -16,3 +16,24 @@ install.packages("ggplot2")
 library(ggplot2)
 summary(learning2014)
 qgplot(age,gender,data=learning2014)+ geom_smooth()
+
+
+fig.width=4, fig.height=3, message=FALSE
+pairs(learning2014[-1])
+#I don't know how to change the width and height for pairs... oh well
+
+install.packages("GGally")
+library(GGally)
+
+?lm
+regression1 <- lm(Points~ Age + gender + Attitude, data=learning2014)
+regression1
+summary(regression1)
+?Call
+Call:
+  lm(Points~ Age + gender + Attitude, data=learning2014)
+
+ggpairs(learning2014, lower = list(combo = wrap("facethist", bins = 20)))
+
+plot(regression1, which=c(1,2,5))
+
