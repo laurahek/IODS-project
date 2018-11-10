@@ -26,9 +26,9 @@ install.packages("GGally")
 library(GGally)
 
 ?lm
-regression1 <- lm(Points~ Age + gender + Attitude, data=learning2014)
-regression1
-summary(regression1)
+regression4 <- lm(Points~ Age + gender + Attitude+deep+surf+stra, data=learning2014)
+regression4
+summary(regression4)
 
 
 ggpairs(learning2014, lower = list(combo = wrap("facethist", bins = 20)))

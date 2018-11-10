@@ -8,53 +8,68 @@
 
 #First part, Data wrangling
 
-The data wrangling was done in the file create_learning2014.R with the following code, comments in *italics*
+The data wrangling was done in a separate file create_learning2014.R with the following code, which is mostly not coded to function in rmarkdown (because I already did this in a separate file), but the second part is...
 
 
-*creating questions*
-```deep_questions <-c("D03", "D11", "D19", "D27", "D07", "D14", "D22", "D30","D06",  "D15", "D23", "D31")```
-```surface_questions <- c("SU02","SU10","SU18","SU26", "SU05","SU13","SU21","SU29","SU08","SU16","SU24","SU32")```
-```strategic_questions <- c("ST01","ST09","ST17","ST25","ST04","ST12","ST20","ST28")```
+**creating initial variables**
+```
+deep_questions <-c("D03", "D11", "D19", "D27", "D07", "D14", "D22", "D30","D06",  "D15", "D23", "D31")
+surface_questions <- c("SU02","SU10","SU18","SU26", "SU05","SU13","SU21","SU29","SU08","SU16","SU24","SU32")
+strategic_questions <- c("ST01","ST09","ST17","ST25","ST04","ST12","ST20","ST28")
+```
 
-*creating columns*
+**creating columns**
 
 
-```deep_columns <- select(JYTOPKYS3_data one_of(deep_questions))
-JYTOPKYS3_data$deep <- rowMeans(deep_columns)```
+```
+deep_columns <- select(JYTOPKYS3_data one_of(deep_questions))
+JYTOPKYS3_data$deep <- rowMeans(deep_columns)
+surface_columns <- select(JYTOPKYS3_data, one_of(surface_questions))
+JYTOPKYS3_data$surf <- rowMeans(surface_columns)
 
-```surface_columns <- select(JYTOPKYS3_data, one_of(surface_questions))
-JYTOPKYS3_data$surf <- rowMeans(surface_columns)```
+strategic_columns <- select(JYTOPKYS3_data, one_of(strategic_questions))
+JYTOPKYS3_data$stra <- rowMeans(strategic_columns)
+```
 
-```strategic_columns <- select(JYTOPKYS3_data, one_of(strategic_questions))
-JYTOPKYS3_data$stra <- rowMeans(strategic_columns)```
+**assigning which columns to keep**
+```
+keep_columns <- c("gender", "Age", "Attitude", "deep", "stra", "surf", "Points")
+learning2014 <- select(JYTOPKYS3_data, one_of(keep_columns))
+```
 
-*assigning which columns to keep*
-```keep_columns <- c("gender", "Age", "Attitude", "deep", "stra", "surf", "Points")
-learning2014 <- select(JYTOPKYS3_data, one_of(keep_columns))```
+**filtering Points**
+```
+learning2014 <- filter (learning2014, Points >0)```
 
-*filtering points*
-```learning2014 <- filter (learning2014, Points >0)```
+the data now has  166 observations and 7 variables
 
-*the data now has  166 observations and 7 variables*
-*setting working directory from the menu and then saving*
-```write.csv(learning2014, file="learning2014", append = TRUE, quote = TRUE, sep = " ",
+next, I set the working directory from the menu and then saved the file and tested it; since the instructions say to demonstrate that you can read the data with read.csv, head, and str, I've done that but seems a bit redundant to use all of them...
+
+
+```
+write.csv(learning2014, file="learning2014", append = TRUE, quote = TRUE, sep = " ",
           eol = "\n", na = "NA", dec = ",", row.names = TRUE,
           col.names = TRUE, qmethod = c("escape", "double"),
           fileEncoding = "")```
+          
 ```?write.csv```
-```read.csv("learning2014")```
-```str(learning2014)```
-```head(learning2014)```
+
+```{r, testing the file}
+learning2014 <- read.csv("C:\\Users\\Laura\\Documents\\GitHub\\IODS-project\\learning2014", header=TRUE)
+read.csv("learning2014", header=TRUE)
+head(learning2014)
+str(learning2014)
+```
+
+
 
 #Second part, using the data & regression analysis
-*Step 1: opening the data and exploring*
-I opened the data by using the menu, I notice that there is an extra variable X1 for the first variable which seems to be a numerical count of the rows... I deleted it with
+**Step 1: opening the data and exploring**
 
-```learning2014 <- select(learning2014, -X1)```
+I opened the data by using the menu, but could have probably used code too. Also I didn't realize at first you need to specify the data each time you chunk code in rmarkdown? That took a while to figure out...
 
-The learning2014 dataset has 166 observations (no missing values), and 7 variables: "gender"   "Age"      "Attitude" "deep"     "stra"     "surf"     "Points"  (accessed with command 'names')
+The learning2014 dataset has 166 observations (no missing values), and 7 variables, as the following shows:
 
-I also explored the data with the following commands
 ```{r, summary statistics}
 learning2014 <- read.csv("C:\\Users\\Laura\\Documents\\GitHub\\IODS-project\\learning2014", header=TRUE)
 
@@ -84,15 +99,22 @@ summary(learning2014$surf)
 qplot(Points,data=learning2014)
 summary(learning2014$Points)
 qplot(Attitude,Age,data=learning2014, aes(x=Attitude, y=Age, col=Age))
-pairs(learning2014[-1])
+
+```
+
+```{r pairs, fig.width=8, fig.height=8, message=FALSE}
+
+library(GGally)
+ggpairs(learning2014, lower = list(combo = wrap("facethist", bins = 20)))
 ```
 
 
 
 *Comments*
-It looks like age is quite unequally distributed, with most participants being under the age of 25. There are also considerably more females than males in the data. Attitude, stra, deep and surf at least resemble the normal curve, but there are some obvious gaps with Points. I also wanted to try to plot two variables, Age and Attitudes, just for fun. The scatter plot matric is cool but way too small and I don't know how to change that just for this table...
 
-*Step 3: Regression analysis*
+It looks like age is quite unequally distributed, with most participants being under the age of 25. There are also considerably more females than males in the data. Attitude, stra, deep and surf at least resemble the normal curve, but there are some obvious gaps with Points. I also wanted to try to plot two variables, Age and Attitudes, just for fun. The scatter plot matrix is cool :D But what can we say from that...The highest correlation seems to be between Points and Attitude, so maybe that's a preliminary indication that Attitude will be a good predictor for Points. But the other variables are not highly correlated, the seecond highest correlation is 0.32 with deep and surf. There doesn't seem to be great gender differences either (the only categorical variable)
+
+**Step 3: Regression analysis**
 
 I am trying Age, gender and Attitude as predictors.
 
@@ -111,22 +133,27 @@ summary(regression1)
 learning2014 <- read.csv("C:\\Users\\Laura\\Documents\\GitHub\\IODS-project\\learning2014", header=TRUE)
 library(ggplot2)
 library(GGally)
-regression1 <- lm(Points~ Attitude, data=learning2014)
-summary(regression1)
+regression2 <- lm(Points~ Attitude, data=learning2014)
+summary(regression2)
 
 ```
 
-*Step 4: interpreting the model* 
+**Step 4: interpreting the model** 
 
-The only significant predictor for Points is Attitude, with p=4.12e-09. T B coefficient is 0.35255 meaning that for each one-unit increase in Points, Attitude is increased by 0.352 units, with a standard error of 0.056. The R squared is 0.19, meaning that the model explaing 19% of the variability in the variable points.
+The only significant predictor for Points is Attitude, with p=4.12e-09. T B coefficient estimate is 0.35255 meaning that for each one-unit increase in Points, Attitude is increased by 0.352 units, with a standard error of 0.056. The R squared is 0.19, meaning that the model explaing 19% of the variability in the variable points, which is not a lot in linear regression, so the model isn't that great in this regard. I tried the other variables too (in a separate file), but they were not significant predictors.
 
-*Step 5: Residuals*
+**Step 5: Residuals**
 
 
 ```{r, residuals}
 learning2014 <- read.csv("C:\\Users\\Laura\\Documents\\GitHub\\IODS-project\\learning2014", header=TRUE)
-plot(regression1, which=c(1,2,5))
+plot(regression2, which=c(1,2,5))
 ```
 
-The assumption relating to residuals for linear regression is that they are normally distributed.
-The first plot 'Residuals vs Fitted' shows if there are any non-linear patterns. The horizontal line is relatively straight, and the residuals are spread relatively evenly. However, there seem to be 3 outlying values, 145, 56 and 35. These cases probably should be explored further and then it should be decided whether to exclude them from the model or not, but the instructions do not really imply we should do that so let's just not that these are outliers. The Quantile-Quantile plot assesses whether the distribution of the residuals is normal; this line should be roughly straight and it is so we are happy with that. The final plot, Residuals vs Leverage, Cook's distance, helps in finding influential cases (outliers that have more influence on the model than other values). Influential cases would appear in the lower right corner, or sometimes the upper. There are no cases plotted there, so we conclude there are no influential cases and the model fits the data well.
+The first assumption with linear regression is linearity which means that the relationship between the dependent and independent variables is linear. The errors should also be normally distributed. Residuals are studied to assess whether the assumptions are met with the model. 
+
+The first plot 'Residuals vs Fitted' plot shows if there are any non-linear patterns. Any patterns will indicate there is a problem with the assumptions, so the spots should be spread randomly on the scatter plots. The horizontal line is relatively straight, and the residuals are spread relatively evenly. I wonder though whether the 3 values close to the lower edge are outliers because they stand further away from the rest of the data, but I am not sure if it works like this in this particular plot. 
+
+The Quantile-Quantile plot assesses whether the distribution of the residuals is normal; this line should be roughly straight and it is so we are happy with that. 
+
+The final plot, Residuals vs Leverage, Cook's distance, helps in finding influential cases (outliers that have more influence on the model than other values). Influential cases would appear in the lower right corner, or sometimes the upper. There are no cases plotted there, so we conclude there are no influential cases and the model fits the data well.
