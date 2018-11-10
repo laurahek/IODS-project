@@ -39,7 +39,6 @@ rm(deep_columns)
 rm(strategic_columns)
 rm(surface_columns)
 
-rm(learning2014)
 
 #assigning which columns to keep
 keep_columns <- c("gender", "Age", "Attitude", "deep", "stra", "surf", "Points")

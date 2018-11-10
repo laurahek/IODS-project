@@ -29,9 +29,7 @@ library(GGally)
 regression1 <- lm(Points~ Age + gender + Attitude, data=learning2014)
 regression1
 summary(regression1)
-?Call
-Call:
-  lm(Points~ Age + gender + Attitude, data=learning2014)
+
 
 ggpairs(learning2014, lower = list(combo = wrap("facethist", bins = 20)))
 
