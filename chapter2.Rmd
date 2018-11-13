@@ -55,7 +55,7 @@ write.csv(learning2014, file="learning2014", append = TRUE, quote = TRUE, sep = 
 ```?write.csv```
 
 ```{r, testing the file}
-learning2014 <- read.csv("C:\\Users\\Laura\\Documents\\GitHub\\IODS-project\\learning2014", header=TRUE)
+learning2014 <- read.csv("C:\\Users\\Laura\\Documents\\GitHub\\IODS-project\\learning2014\\", header=TRUE)
 read.csv("learning2014", header=TRUE)
 head(learning2014)
 str(learning2014)
@@ -71,7 +71,7 @@ I opened the data by using the menu, but could have probably used code too. Also
 The learning2014 dataset has 166 observations (no missing values), and 7 variables, as the following shows:
 
 ```{r, summary statistics}
-learning2014 <- read.csv("C:\\Users\\Laura\\Documents\\GitHub\\IODS-project\\learning2014", header=TRUE)
+learning2014 <- read.csv("C:\\Users\\Laura\\Documents\\GitHub\\IODS-project\\learning2014\\", header=TRUE)
 
 dim(learning2014)
 names(learning2014)
