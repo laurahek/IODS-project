@@ -57,8 +57,9 @@ alc <- mutate(alc, alc_use = (Dalc + Walc) / 2)
 alc <- mutate(alc, high_use = alc_use > 2)
 
 #saving...
+?write.csv
 
-write.csv(learning2014, file="alc", append = TRUE, quote = TRUE, sep = ",",
+write.csv(data, file="alc_data", append = TRUE, quote = TRUE, sep = ",",
           
           eol = "\n", na = "NA", dec = ",", row.names = FALSE,
           

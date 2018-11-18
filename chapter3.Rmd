@@ -1,0 +1,56 @@
+
+Please do not worry about my chapter 2 missing from here; I did the earleir exercises with my home PC but this week I am working with my laptop and there is a problem knitting chapter 2 from my laptop because the file directories I've used there are for my home PC...
+
+**Here begins Week 3**
+
+*Data Wrangling*
+
+The Data Wrangling was done in the file create_students.R
+
+*Logistic Regression*
+
+Using alc_data
+
+The data has 35 variables and 382 observations. I am picking the following variables to test in the logistic regression model: sex, age, health and romantic. The hypothesis is that males will be more likely than females to consume high quantities of alcohol, older people will be more likely than younger people to consume high quantities of alcohol, people with more absences are going to use more alchohol, and people who are not in a romantic relationship are more likely to consume higher quantities of alcohol than people in romantic relationships.
+
+Visualizing data
+
+
+```{r qplot, fig.width=4, fig.height=3, message=FALSE}
+alc_data <- read.csv("Z:\\alc_data", header=TRUE)
+library(ggplot2)
+
+qplot(alc_use,data=alc_data)
+qplot(sex,data=alc_data)
+qplot(age,data=alc_data)
+qplot(health,data=alc_data)
+qplot(romantic,data=alc_data)
+
+g2 <- ggplot(alc_data, aes(high_use))
+g2 + facet_wrap("sex") + geom_bar()
+
+g2 <- ggplot(alc_data, aes(x = high_use, y = age))
+g2 + geom_boxplot() + ylab("age")+ggtitle("high alcohol use ang age")
+g3 <- ggplot(alc_data, aes(x=high_use, y=absences))
+g3 + geom_boxplot() + ylab("absences")+ggtitle("high alcohol use ang absences")
+
+```
+
+```{r, glimpsing, visualizing, summarizing}
+alc_data <- read.csv("Z:\\alc_data", header=TRUE)
+
+library(tidyr); library(dplyr); library(ggplot2)
+glimpse(alc_data)
+
+gather(alc_data) %>% glimpse
+glimpse(alc_data)
+gather(alc_data) %>% ggplot(aes(value)) + facet_wrap("key", scales = "free")+geom_bar()
+alc_data %>% group_by(sex) %>% summarise(count = n())
+```
+```{r, building the model}
+alc_data <- read.csv("Z:\\alc_data", header=TRUE)
+m <- glm(high_use ~ sex + age + romantic + absences, data = alc_data, family = "binomial")
+print(m)
+summary(m)
+coef(m)
+```
