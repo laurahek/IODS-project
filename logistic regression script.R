@@ -40,9 +40,24 @@ g1 + geom_boxplot() + ylab("grade")
 g2 <- ggplot(alc_data, aes(x = high_use, y = age))
 g2 + geom_boxplot() + ylab("age")
 
+install.packages("gmodels")
+
+library(gmodels)
+CrossTable(alc_data$high_use, alc_data$sex)
+table(alc_data$high_use,alc_data$sex)
 
 #building the model
 m <- glm(high_use ~ sex + age + romantic + absences, data = alc_data, family = "binomial")
 m
 coef(m)
 summary(m)
+OR <- coef(m) %>% exp
+CI <- confint(m) %>% exp
+cbind(OR, CI)
+probabilities <- predict(m, type = "response")
+alc_data <- mutate(alc_data, probability = probabilities)
+
+alc_data <- mutate(alc_data, prediction = probability > 0.5)
+
+select(alc_data, age, absences, sex, romantic, high_use, probability, prediction) %>% tail(10)
+table(high_use = alc_data$high_use, prediction = alc_data$prediction)

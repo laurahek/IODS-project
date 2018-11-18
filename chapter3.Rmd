@@ -34,14 +34,14 @@ g2 + geom_boxplot() + ylab("age")+ggtitle("high alcohol use ang age")
 g3 <- ggplot(alc_data, aes(x=high_use, y=absences))
 g3 + geom_boxplot() + ylab("absences")+ggtitle("high alcohol use ang absences")
 
+table(alc_data$high_use,alc_data$sex)
+table(alc_data$high_use,alc_data$romantic)
 ```
 
 ```{r, glimpsing, visualizing, summarizing}
 alc_data <- read.csv("Z:\\alc_data", header=TRUE)
 
 library(tidyr); library(dplyr); library(ggplot2)
-glimpse(alc_data)
-
 gather(alc_data) %>% glimpse
 glimpse(alc_data)
 gather(alc_data) %>% ggplot(aes(value)) + facet_wrap("key", scales = "free")+geom_bar()
@@ -53,4 +53,26 @@ m <- glm(high_use ~ sex + age + romantic + absences, data = alc_data, family = "
 print(m)
 summary(m)
 coef(m)
+OR <- coef(m) %>% exp
+CI <- confint(m) %>% exp
+cbind(OR, CI)
+```
+
+First from the summary of the model we see that sex and absences are significant variables, but romantic and age are not. Thus we shall only interpret the coefficients for sex and absences.
+
+We turn to the ORs for intepretation and find that the odds for men to have high alcohol use are 2.7 [1.7, 4.4] times greater than for females. With absences, for every one-unit increase on the absence scale, the odds of high alcohol use are 1.07 [1.04, 1.11] greater, which may at first seem like a small difference but we need to remember that absences is a contintuous variable and one unit increase is a small unit. In sum, sex and absences are significant predictors for high alcohol use. 
+
+Next I added the probabilities to the data and for the selected variables took a closer look and then created a table for the predictions and explored the predictions
+```{r, probabilities}
+alc_data <- read.csv("Z:\\alc_data", header=TRUE)
+probabilities <- predict(m, type = "response")
+alc_data <- mutate(alc_data, probability = probabilities)
+alc_data <- mutate(alc_data, prediction = probability > 0.5)
+select(alc_data, age, absences, sex, romantic, high_use, probability, prediction) %>% tail(10)
+table(high_use = alc_data$high_use, prediction = alc_data$prediction)
+library(ggplot2)
+g <- ggplot(alc_data, aes(x = probability, y = high_use, col = prediction))
+g + geom_point()
+
+table(high_use = alc_data$high_use, prediction = alc_data$prediction)
 ```
