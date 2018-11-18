@@ -1,7 +1,5 @@
 #Laura Hekanaho, November 8th
-#Week 2 exercises, instructions are not very comprehensive...
-
-rm(learning2014)
+#Week 2 exercises
 
 str(JYTOPKYS3_data)
 #str command shows the "classes" for the variables
